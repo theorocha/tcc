@@ -33,21 +33,16 @@ public class TokenController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
-
         var user = userRepository.findByUsername(loginRequest.username());
-
         if (user.isEmpty() || !user.get().isLoginCorrect(loginRequest, passwordEncoder)) {
             throw new BadCredentialsException("user or password is invalid!");
         }
-
         var now = Instant.now();
         var expiresIn = 1800L; // 30 minutos
-
         var scopes = user.get().getRoles()
                 .stream()
                 .map(Role::getName)
-                .collect(Collectors.joining(" ")); // coloca a role do usuário no jwt.
-
+                .collect(Collectors.joining(" ")); // set role on jwt.
         var claims = JwtClaimsSet.builder()
                 .issuer("backend")
                 .subject(user.get().getUserId().toString())
@@ -55,9 +50,7 @@ public class TokenController {
                 .expiresAt(now.plusSeconds(expiresIn))
                 .claim("scopes", scopes)
                 .build();
-
         var jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-
         return ResponseEntity.ok(new LoginResponse(jwtValue, expiresIn));
     }
 

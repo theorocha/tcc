@@ -85,6 +85,7 @@ public class GradesController {
     }
 
     @GetMapping("/my-grade")
+    @PreAuthorize("hasAuthority('basic')")
     public ResponseEntity<Object> myGrade(JwtAuthenticationToken token) {
         UUID userId = UUID.fromString(token.getName());
         var userOptional = userRepository.findById(userId);

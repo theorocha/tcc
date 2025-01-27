@@ -49,7 +49,7 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    @PreAuthorize("hasAuthority('admin')")
+    @PreAuthorize("hasAuthority('admin') || hasAuthority('super_admin')")
     public ResponseEntity<List<User>> listUsers() {
         var users = userRepository.findAll();
         return ResponseEntity.ok(users);
